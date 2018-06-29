@@ -1,4 +1,4 @@
-#----------------------------------------
+#----------------------------------------------------------------------------------------------------------------
 
 
 #Project Name: Berkadia Rent Estimator 
@@ -6,34 +6,23 @@
 #contributors: Rajit Nikhare, Naveen, Akansha Toppo, SAISRIVATHSALA Ragireddy, Vineel Talupula
 
 
-#----------------------------------------
-
-#sampling the data
-sample1 <- df[sample(1:971802, 10000,replace=FALSE),]
-sample2 <- df[sample(1:971802, 10000,replace=FALSE),]
-sample3 <- df[sample(1:971802, 10000,replace=FALSE),]
-
-lm1<-lm(EffectiveRentUnitAmount~., sample1)
-summary(lm1)
-
-
-
-
-
+#-----------------------------------------------------------------------------------------------------------------
 
 
 
 #get the two data frames
-setwd("C:\Users\rnikhare\Downloads\")
+setwd("C:/Users/rnikhare/Downloads/")
 df1 <- read.csv("GOLD_PROPERTY_02_21_18.csv",na.strings = c("NA","NULL"))
 df2 <- read.csv("GOLD_RENTS_02_21_18.csv",na.strings = c("NA","NULL"))
 
 #Change the column name
-colnames(df1)[colnames(df1) == 'ï..PropertyGoldenID'] <- 'PropertyGoldenID'
-colnames(df2)[colnames(df2) == 'ï..PropertyGoldenID'] <- 'PropertyGoldenID'
+colnames(df1)[colnames(df1) == 'Ã¯..PropertyGoldenID'] <- 'PropertyGoldenID'
+colnames(df2)[colnames(df2) == 'Ã¯..PropertyGoldenID'] <- 'PropertyGoldenID'
 
 #Merge the two data frames into one by the common column "PropertyGoldenID"
 df <- merge(df1, df2, by="PropertyGoldenID")
+df_copy<-df
+#df<-df_copy
 
 #Delete the column with more than 70% NA values                   
 df <- subset(df, select = -c(MostRecentSaleDate,
@@ -263,6 +252,14 @@ df <- subset(df, select = -c(OriginalLoanAmount,
                                           BarbequeInd,
                                           AdditionalCareInd,
                                           EarthquakeZoneInd))
+#sampling the data
+sample1 <- df[sample(1:971802, 10000,replace=FALSE),]
+sample2 <- df[sample(1:971802, 10000,replace=FALSE),]
+sample3 <- df[sample(1:971802, 10000,replace=FALSE),]
+
+#running lm model to check p-values for the significant variables.
+lm1<-lm(EffectiveRentUnitAmount~., sample1)
+summary(lm1)
 
 #select the significant variables in the data frame
 df <- subset(df, select = c(PropertyGoldenID,
@@ -272,7 +269,6 @@ df <- subset(df, select = c(PropertyGoldenID,
                             NumberUnits.y,
                             AverageSqFtPerUnit,
                             NumberAcres,
-                            Metering,
                             MilitaryInd,
                             AgeRestrictedInd,
                             CentralAirConditioningInd,
@@ -289,19 +285,28 @@ df <- subset(df, select = c(PropertyGoldenID,
                             PrimaryInd,
                             NumberFloors,
                             CurOccupancyPct,
-                            ConstructionType,
                             AffordableHousingInd,
                             MajorStreetInd,
                             DevelopmentStatus,
                             CBSACode,
                             SquareFeet,
                             MarketRentUnitAmount,
-                            UnitType))
+                            UnitType)) #removed COnstructionType  #metering?
 summary(df$UnitType)
+str(df)
 
-#imputations:
+#separate the categorical values:
 
-df1<- subset[df$UnitType %in% c("1 Bedroom/0 Bath",
+df_cat<-df[,c(17,18,26)]
+df_num <- df[,-c(1,17,18,26,30)]
+
+names(df)        
+str(df_num)
+summary(df_cat)
+
+#subset according to the unit type.   
+           
+df_num<- filter(df_num, UnitType %in% c("1 Bedroom/0 Bath",
                            "1 Bedroom/1 Bath",
                            "1 Bedroom/2 Bath",
                            "1 Bedroom/3 Bath",
@@ -324,12 +329,144 @@ df1<- subset[df$UnitType %in% c("1 Bedroom/0 Bath",
                            "5 Bedroom/5 Bath",
                            "5 Bedroom/6 Bath",
                            "6 Bedroom/6 Bath",
-                           "Studio"),]
+                           "Studio"))
 
 
-summary(df$UnitType)
+df_num<-df_num[,-26]
+
+#missForest
+library(missForest)
+imp_df_cat<-missForest(df_cat)
+imp_df <- mice(df, m=1, maxit = 1, method = 'polyreg', seed = 500)
+
+str(imp_df_cat$ximp)
+
+imp_df_num<-missForest(df_num)
+
+str(df_num)
+str(df)
+
+sum(is.na(df)) # 7% data is still NA (220/3086)
+
+imp1<-subset(df_num, UnitType == "1 Bedroom/0 Bath")
+imp2<-subset(df_num, UnitType == "1 Bedroom/1 Bath")
+imp3<-subset(df_num, UnitType == "1 Bedroom/2 Bath")
+imp4<-subset(df_num, UnitType == "1 Bedroom/3 Bath")
+imp5<-subset(df_num, UnitType == "2 Bedroom/0 Bath")
+imp6<-subset(df_num, UnitType == "2 Bedroom/1 Bath")
+imp7<-subset(df_num, UnitType == "2 Bedroom/2 Bath")
+imp8<-subset(df_num, UnitType == "2 Bedroom/3 Bath")
+imp9<-subset(df_num, UnitType == "2 Bedroom/4 Bath")
+imp10<-subset(df_num, UnitType == "3 Bedroom/2 Bath")
+imp11<-subset(df_num, UnitType == "3 Bedroom/3 Bath")
+imp12<-subset(df_num, UnitType == "3 Bedroom/4 Bath")
+imp13<-subset(df_num, UnitType == "4 Bedroom/1 Bath")
+imp14<-subset(df_num, UnitType == "4 Bedroom/2 Bath")
+imp15<-subset(df_num, UnitType == "4 Bedroom/3 Bath")
+imp16<-subset(df_num, UnitType == "4 Bedroom/4 Bath")
+imp17<-subset(df_num, UnitType == "4 Bedroom/5 Bath")
+imp18<-subset(df_num, UnitType == "5 Bedroom/2 Bath")
+imp19<-subset(df_num, UnitType == "5 Bedroom/3 Bath")
+imp20<-subset(df_num, UnitType == "5 Bedroom/4 Bath")
+imp21<-subset(df_num, UnitType == "5 Bedroom/5 Bath")
+imp22<-subset(df_num, UnitType == "5 Bedroom/6 Bath")
+imp23<-subset(df_num, UnitType == "6 Bedroom/6 Bath")
+imp24<-subset(df_num, UnitType == "Studio")
+
+str(imp1)
+
+completedData1<- complete(imp1,1)
+
+# library(mice)
+# init = mice(imp1, maxit=0) 
+# meth <- init$method
+# predM <- init$predictorMatrix
+# meth[c("UnitType","Longitude")]=""
+# meth[c("PropertyGoldenID","Metering","Region","DataSource","ConstructionType","DevelopmentStatus")]="lda" 
+# meth[c("OnMarket","NumberUnits.x","NumberUnits.y","AverageSqFtPerUnit","NumberAcres","MilitaryInd",
+#        "AgeRestrictedInd","CentralAirConditioningInd","GolfCourseInd","LakeInd","ParkingGarageDirectAccessInd",
+#        "ParkingGarageFreeStandingInd","TennisSportsCourtInd","UnitsPerAcre","SquareFeet","TotalSqFtUnitType","PrimaryInd",
+#        "NumberFloors","CurOccupancyPct","AffordableHousingInd","MajorStreetInd","CBSACode","SquareFeet.1","MarketRentUnitAmount")]="pmm" 
+# 
+# set.seed(103)
+# imputed = mice(imp1, method=meth, predictorMatrix=predM, m=1)
+# 
+# imp1$Longitude<- as.numeric(imp1$Longitude)
+# str(imp1)
+
+#impute values according to the unit type
+# imp1 <- mice(imp1, m=1, maxit = 1,  method = c("logreg","pmm","pmm","pmm","pmm","pmm","pmm","logreg","pmm","pmm","pmm","pmm","pmm","pmm","pmm","pmm","pmm","logreg","logreg","pmm","pmm","pmm","pmm","pmm","logreg","pmm","pmm","logreg","pmm","pmm","pmm",""), seed = 500)
+imp1_num <- mice(imp1, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp2_num <- mice(imp2, m=1, maxit = 1, method = 'mean', seed = 500)
+imp3_num <- mice(imp3, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp4_num <- mice(imp4, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp5_num <- mice(imp5, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp6_num <- mice(imp6, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp7_num <- mice(imp7, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp8_num <- mice(imp8, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp9_num <- mice(imp9, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp10_num<- mice(imp10, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp11_num<- mice(imp11, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp12<- mice(imp12, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp13<- mice(imp13, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp14<- mice(imp14, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp15<- mice(imp15, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp16<- mice(imp16, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp17<- mice(imp17, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp18<- mice(imp18, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp19<- mice(imp19, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp20<- mice(imp20, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp21<- mice(imp21, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp22<- mice(imp22, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp23<- mice(imp23, m=1, maxit = 1, method = 'pmm', seed = 500)
+imp24<- mice(imp24, m=1, maxit = 1, method = 'pmm', seed = 500)
 
 
+#write the imputed files to a csv for regression modelling
+
+rbind
+write.csv(final_property_data_set, file = "final_property.csv")
+
+
+
+
+
+# 
+# test<-na.omit(df)
+# summary(df)
+# 
+# names(df)
+# summary(df$UnitType == "Studio")
+# 
+# 
+# summary(test$UnitType == "Studio")
+# 
+# 
+# df$UnitType<- factor(df$PropertyGoldenID)
+
+
+
+# #imputation function
+# impute <- function(x) {
+#   a<-eval(paste("imp", x, sep= ""))
+#   c<-(text=paste("imp", x, sep= "")
+#   a<-eval(parse(c)))
+#   #a<-paste('imp', x, sep= "")
+#   b<-mice(data=(a), m=5, maxit = 50, method = 'pmm', seed = 500)
+#   return(b) 
+# }
+# as.name(a)
+# summary(a)
+# a
+# x<-1
+# impute(1)
+# ?mice
+# a<-paste("imp", x, sep= "") 
+# 
+# library(mice)
+# for (x in 1){
+# impute(x)
+# }
 #sample of the data frame to test linear regression models:
 
 
@@ -338,7 +475,7 @@ summary(df$UnitType)
 
 
 #convert the values to integers for correlation calculations
-for(i in 1:74) {
+for(i in 1:31) {
   df[, i] <- as.numeric(df[, i])
 }
 
@@ -444,7 +581,7 @@ for (i in 70){
 # 
 # library(missForest)
 # 
-# try<-missForest(try)  
+# try<-missForest(try)
 # try2<-try$ximp
 # summary(try2)
 # 
