@@ -1,0 +1,93 @@
+#------------------------------------------------------------------------------------------------------------------------------
+Predictive Analysis
+
+Berkadia
+
+
+
+#------------------------------------------------------------------------------------------------------------------------------
+library(knitr)
+library(RWeka)
+library(rminer)
+library(matrixStats)
+library(caret)
+
+
+
+setwd("/Users/rajit/Downloads/")
+df <- read.csv("df_clean2.csv")
+str(df)
+train<-df[,-29]
+test<-df[,29]
+
+
+################################################################
+### Cross Validation
+###############################################################
+
+cv_lm <- function(df, target, nFolds, seedVal, metrics_list, k, i)
+{
+  # create folds using the assigned values
+  
+  set.seed(seedVal)
+  folds = createFolds(df[,target],nFolds)
+  
+  # The lapply loop
+  
+  cv_results <- lapply(folds, function(x)
+  { 
+    # data preparation:
+    
+    test_target <- df[x,target]
+    test_input <- df[x,-target]
+    
+    train_target <- df[-x,target]
+    train_input <- df[-x,-target]
+    pred_model <- lm( train_target ~ State+  NumFloors + 
+                        PropertyLocationRating + PropertyImprovementRating+
+                        ElevatorInd +  UnitWasherDryerInd +AmenityPoolIndex+
+                        SquareFeet + NumberBedrooms + NumberBathrooms , 
+                      data =train_input)  
+    pred_train <- predict(pred_model, train_input)
+    return(mmetric(train_target,pred_train,metrics_list))
+  })
+  
+  # convert a list to a data frame using as.data.frame and convert this data frame to a matrix before using rowSds()
+  cv_results_m <- as.matrix(as.data.frame(cv_results))
+  
+  cv_mean<- as.matrix(rowMeans(cv_results_m))
+  cv_sd <- as.matrix(rowSds(cv_results_m))
+  colnames(cv_mean) <- "Mean"
+  colnames(cv_sd) <- "Sd"
+  
+  # Combine and show cv_results and Means and Sds
+  cv_all <- cbind(cv_results_m, cv_mean, cv_sd)
+  kable(t(cv_all),digits=3)
+}
+
+str(df)
+#df<- train
+names(df)
+target<-29
+seedVal<-100
+metrics_list <- c("MAE","RMSE","MAPE","RMSPE","RAE","RRSE","R2")
+cv_lm(df, target, 10, seedVal, metrics_list, 1, FALSE)
+
+lm<-lm(EffectiveRentUnitAmount~.,df)
+summary(lm)
+plot(lm)
+
+
+library(caret)
+library(Boruta)
+boruta.train_1 <- Boruta( EffectiveRentUnitAmount ~ . , data =df, doTrace = 2)
+
+print(boruta.train_1)
+
+plot(boruta.train_1, xlab = "", xaxt = "n")
+lz<-lapply(1:ncol(boruta.train_1$ImpHistory),function(i)
+  boruta.train_1$ImpHistory[is.finite(boruta.train_1$ImpHistory[,i]),i])
+names(lz) <- colnames(boruta.train_1$ImpHistory)
+Labels <- sort(sapply(lz,median))
+axis(side = 1,las=2,labels = names(Labels),
+     at = 1:ncol(boruta.train_1$ImpHistory), cex.axis = 0.7)
