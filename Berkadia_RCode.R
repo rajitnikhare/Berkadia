@@ -3,7 +3,6 @@
 
 #Project Name: Berkadia Rent Estimator 
 #version: 3.1
-#contributors: Rajit Nikhare, Naveen, Akansha Toppo, Vathsala Ragireddy, Vineel Talupula
 
 
 #-----------------------------------------------------------------------------------------------------------------
