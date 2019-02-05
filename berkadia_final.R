@@ -377,22 +377,7 @@ str(imp1)
 
 completedData1<- complete(imp1,1)
 
-# library(mice)
-# init = mice(imp1, maxit=0) 
-# meth <- init$method
-# predM <- init$predictorMatrix
-# meth[c("UnitType","Longitude")]=""
-# meth[c("PropertyGoldenID","Metering","Region","DataSource","ConstructionType","DevelopmentStatus")]="lda" 
-# meth[c("OnMarket","NumberUnits.x","NumberUnits.y","AverageSqFtPerUnit","NumberAcres","MilitaryInd",
-#        "AgeRestrictedInd","CentralAirConditioningInd","GolfCourseInd","LakeInd","ParkingGarageDirectAccessInd",
-#        "ParkingGarageFreeStandingInd","TennisSportsCourtInd","UnitsPerAcre","SquareFeet","TotalSqFtUnitType","PrimaryInd",
-#        "NumberFloors","CurOccupancyPct","AffordableHousingInd","MajorStreetInd","CBSACode","SquareFeet.1","MarketRentUnitAmount")]="pmm" 
-# 
-# set.seed(103)
-# imputed = mice(imp1, method=meth, predictorMatrix=predM, m=1)
-# 
-# imp1$Longitude<- as.numeric(imp1$Longitude)
-# str(imp1)
+
 
 #impute values according to the unit type
 # imp1 <- mice(imp1, m=1, maxit = 1,  method = c("logreg","pmm","pmm","pmm","pmm","pmm","pmm","logreg","pmm","pmm","pmm","pmm","pmm","pmm","pmm","pmm","pmm","logreg","logreg","pmm","pmm","pmm","pmm","pmm","logreg","pmm","pmm","logreg","pmm","pmm","pmm",""), seed = 500)
@@ -431,43 +416,7 @@ write.csv(final_property_data_set, file = "final_property.csv")
 
 
 
-# 
-# test<-na.omit(df)
-# summary(df)
-# 
-# names(df)
-# summary(df$UnitType == "Studio")
-# 
-# 
-# summary(test$UnitType == "Studio")
-# 
-# 
-# df$UnitType<- factor(df$PropertyGoldenID)
 
-
-
-# #imputation function
-# impute <- function(x) {
-#   a<-eval(paste("imp", x, sep= ""))
-#   c<-(text=paste("imp", x, sep= "")
-#   a<-eval(parse(c)))
-#   #a<-paste('imp', x, sep= "")
-#   b<-mice(data=(a), m=5, maxit = 50, method = 'pmm', seed = 500)
-#   return(b) 
-# }
-# as.name(a)
-# summary(a)
-# a
-# x<-1
-# impute(1)
-# ?mice
-# a<-paste("imp", x, sep= "") 
-# 
-# library(mice)
-# for (x in 1){
-# impute(x)
-# }
-#sample of the data frame to test linear regression models:
 
 
 
@@ -501,93 +450,3 @@ for (i in 70){
 
 
 
-
-# 
-# 
-# #converting to right type
-# df$PropertyName <- as.character(df$PropertyName)
-# df$UnitType<- as.character(df$UnitType)
-# 
-# 
-# df$PropertyGoldenID<- factor(df$PropertyGoldenID)
-# df$OnMarket<- factor(df$OnMarket)
-# df$NumberFloors<- factor(df$NumberFloors)
-# df$NumberBuildings<- factor(df$NumberBuildings)
-# df$YearBuilt<- factor(df$YearBuilt)
-# df$AffordableHousingInd<- factor(df$AffordableHousingInd)
-# df$LoanCount<- factor(df$LoanCount)
-# df$BerkadiaServiced<- factor(df$BerkadiaServiced)
-# 
-# df$LoanLienPosition<- factor(df$LoanLienPosition)
-# df$DevelopmentStatus<- factor(df$DevelopmentStatus)
-# df$Region<- factor(df$Region)
-# df$ExcludeFromSyncInd<- factor(df$ExcludeFromSyncInd)
-# df$DataSource<- factor(df$DataSource)
-# df$UnitType<- factor(df$UnitType)
-# df$PrimaryInd<- factor(df$PrimaryInd)
-# df$NumberBedrooms<- factor(df$NumberBedrooms)
-# df$NumberBathrooms<- factor(df$NumberBathrooms)
-# 
-# 
-# #df$NumberBedrooms<- as.numeric(df$NumberBedrooms)
-# #df$UnitType<- as.numeric(df$UnitType)
-# 
-# 
-# 
-# 
-# library(dplyr)
-# df <- df %>% subset(df$NumberAcres>0)
-# #df <- df %>% subset(df$NumberBedrooms>0)
-# 
-# df$DevelopmentStatus[df$DevelopmentStatus == 'Complete'] <- "Completed"
-# 
-# 
-# 
-# 
-# samp <- subset(df, UnitType=='1 Bedroom/1 Bath')
-# 
-# 
-# y<-try[,94]
-# x<-try[,-94]
-# 
-# try<-try[,-1]
-# try$PropertyGoldenID<- as.character(try$PropertyGoldenID)
-# #missForest
-# library(missForest)
-# try<-missForest(try)
-# samp1<-try$ximp
-# 
-# summary(samp)
-# 
-# str(try)
-# summary(try)
-# 
-# 
-# for(i in 2:98) {
-#   try[, i] <- as.numeric(try[, i])
-# }
-# 
-# 
-# lm<-lm(EffectiveRentUnitAmount~.,data=try)
-# 
-# summary(try$PropertyCity)
-# 
-# library(glmnet)
-# glmmod <- glmnet(x, y, alpha=1, family="binomial")
-# 
-# library(mice)
-# imputed_Data <- mice(try, m=5, maxit = 50, method = 'pmm', seed = 500)
-# summary(imputed_Data)
-# 
-# library(missForest)
-# 
-# try<-missForest(try)
-# try2<-try$ximp
-# summary(try2)
-# 
-# pairs(df[1:10])
-# 
-# #lm = lm(EffectiveRentUnitAmount ~ ., data=df)
-# 
-# library(Hmisc)
-# correlations <- rcorr(as.matrix(df))
