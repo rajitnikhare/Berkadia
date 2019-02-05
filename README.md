@@ -10,5 +10,5 @@ Data-set used in the project is provided by the company Berkadia. It comprised o
 6. Distance from High School
 7. Quality of pipelines used
 
-Our final prediction model has 85% accuracy and 0.19 RMSE.
+The final prediction model has 85% accuracy and 0.19 RMSE.
 
