@@ -1,6 +1,6 @@
 # Berkadia - Predict rent of housing properties using R
 
-### Data-set used in the project is provided by the company Berkadia. It comprised of 1 million rows and 300 columns of data describing housing properties in USA. Some of the feature names are:
+Data-set used in the project is provided by the company Berkadia. It comprised of 1 million rows and 300 columns of data describing housing properties in USA. Some of the feature names are:
 
 1. Garage Area
 2. Number of Bedrooms
